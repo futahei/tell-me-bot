@@ -1,14 +1,17 @@
 # tell-me-bot
 
-社内用語辞典をいい感じに使うためのSlack Botです。
+社内用語辞典をいい感じに使うための Slack Bot です。
 
 ## 機能
+
 ### 用語の表示
+
 完全一致する用語を tell-me-bot にメンションした場合は、即結果が表示されます。もし説明が間違っていた場合は、メッセージ記載のスプレッドシートから編集できます。
 
 ![](https://i.gyazo.com/782e65b1d13566e25238295ddbb1ab5b.gif)
 
 ### 曖昧検索への対応
+
 もし、完全一致はしないけれども似たような単語がある場合は、候補を表示します。候補のボタンを押すと、その用語の説明を答えてくれます。
 
 内部的には Fuse.js の Fuzzy Search を利用しています。
@@ -19,39 +22,42 @@ https://github.com/krisk/fuse
 ![](https://i.gyazo.com/a9ae6538be8c5119fafebd0339fa6b8b.gif)
 
 ### 用語の追加
+
 もし曖昧検索の結果が間違っていたり、検索に該当する用語がない場合は、Slack のモーダルから用語を新規に追加することもできます（スプレッドシートを直接編集することでも可能です）。
 手軽に追加できるので、気づいたときにどんどん用語を増やすことができます。
-
 
 ![](https://i.gyazo.com/9e878a49c8a675bf161761a1949193e5.gif)
 
 ## 質問チャネルへの代理質問（Optional）
+
 社内の質問チャネルに tell-me-bot が代理質問する機能もあります。
 
-|質問したチャネル|ask-anythingチャネル|
-|---|---|
-|![](https://i.gyazo.com/5f6a55b4ee64c3cc74817947d028382a.png)|![](https://i.gyazo.com/365d0ed3ff369edd70478cca27176355.png)|
+| 質問したチャネル                                              | ask-anything チャネル                                         |
+| ------------------------------------------------------------- | ------------------------------------------------------------- |
+| ![](https://i.gyazo.com/5f6a55b4ee64c3cc74817947d028382a.png) | ![](https://i.gyazo.com/365d0ed3ff369edd70478cca27176355.png) |
 
+※ この機能は質問チャネルの存在が前提にあるのでオプショナルです。もし利用したい場合は、後述する Firebase の設定にて環境変数の`slack.ask_channel_id`に質問チャネルのチャネル ID を指定してください。
 
-※ この機能は質問チャネルの存在が前提にあるのでオプショナルです。もし利用したい場合は、後述するFirebaseの設定にて環境変数の`slack.ask_channel_id`に質問チャネルのチャネルIDを指定してください。
 ## 設定方法
 
 ### 事前準備
+
 事前に以下を準備します。
 
 - [Firebase CLI](https://firebase.google.com/docs/cli)
-    - 任意のシェルでセットアップしておいてください
+  - 任意のシェルでセットアップしておいてください
 - 空の Firebase プロジェクト
-    - Blaze プラン（従量課金プラン）にプラン変更してください
+  - Blaze プラン（従量課金プラン）にプラン変更してください
 - 任意の Spreadsheet
-    - 1 枚目のシートの A1 に用語、B1 に説明というヘッダーを追加しておいてください
-    - Spreadsheet の ID をメモしておいてください（[参考](http://amehal.blogspot.com/2015/10/id.html))
+  - 1 枚目のシートの A1 に用語、B1 に説明というヘッダーを追加しておいてください
+  - Spreadsheet の ID をメモしておいてください（[参考](http://amehal.blogspot.com/2015/10/id.html))
 
 :::message
 Firebase を Blaze プラン（従量課金プラン）としているのは、通常のプランだと Cloud FUnctions for Firebase の公開が制限されるからです。基本的にこの用途程度の利用なら費用はかからないと思います。
 :::
 
-### Slack APPの作成（1）
+### Slack APP の作成（1）
+
 Slack の Your Apps にアクセスして `Create New App` を押します。
 
 https://api.slack.com/apps
@@ -107,6 +113,7 @@ settings:
 ![](https://i.gyazo.com/f19307f592b2de2e91b295062322384e.png)
 
 アプリが作成されたら以下 2 の値をメモしておきます。
+
 - Basic Information > App Credentials の `Signin Secret`
 - OAuth & Permission > OAuth Tokens for Your Workspace の `Bot User OAuth Token`
 
@@ -148,7 +155,6 @@ $ firebase functions:config:set slack.ask_channel_id=""
 $ firebase functions:config:set sheet.id="xxxx"
 ```
 
-
 次に functions ディレクトリの依存モジュールを install します。
 
 ```
@@ -165,7 +171,7 @@ $ npm --prefix ./functions run deploy
 
 ![](https://i.gyazo.com/a4c8183f8cd031a1afc433f6026d5358.png)
 
-### GCPの設定
+### GCP の設定
 
 GCP のダッシュボードにアクセスし、Firebase で作成したプロジェクトを指定してください。
 
@@ -185,7 +191,7 @@ https://console.cloud.google.com/apis/dashboard?hl=ja
 
 これで GCP 側の準備は完了です。
 
-### Slack APPの設定（2）
+### Slack APP の設定（2）
 
 Slack APP に戻り、App Manifest を開きます。
 そこで、manifest の設定で以前`example.com`としていた箇所を、先程メモした fucntions の `デプロイURL/events` を記載します。必ず後ろに`/events`をつけてください。
@@ -203,6 +209,7 @@ Install App から `Install Workspace` を実行してください。
 ![](https://i.gyazo.com/3f1ad96a6144880d606b5675e827db75.png)
 
 ### 動作確認
+
 インストールした Slack Work スペースの任意のチャネルに tell-me-bot を追加してメンションしてみてください。
 
 ![](https://i.gyazo.com/8fddd854afdb412c1c6780fdb4bc4b33.png)

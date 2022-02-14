@@ -1,0 +1,24 @@
+{
+  "name": "Node.js & TypeScript",
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "app",
+  "workspaceFolder": "/app",
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+      "source.fixAll.stylelint": true
+    },
+    "javascript.format.enable": false,
+    "json.format.enable": false
+  },
+  "extensions": [
+    "editorconfig.editorconfig",
+    "codezombiech.gitignore",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "github.copilot"
+  ],
+  "remoteUser": "node"
+}
